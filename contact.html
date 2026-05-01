@@ -64,11 +64,28 @@
           <span class="contact-channel-value">@thrustcinema</span>
           <span class="contact-arrow">↗</span>
         </a>
+        <a href="https://www.tiktok.com/@thrustcinema" target="_blank" rel="noopener" class="contact-channel">
+          <span class="contact-channel-label">TikTok</span>
+          <span class="contact-channel-value">@thrustcinema</span>
+          <span class="contact-arrow">↗</span>
+        </a>
       </div>
     </div>
 
     <!-- FORM -->
-    <form class="contact-form reveal" id="contactForm" onsubmit="handleContactSubmit(event)">
+    <!-- IMPORTANT: Replace YOUR_FORMSPREE_ID below with your actual Formspree form ID.
+         How to get it (free, 5 min):
+         1. Go to https://formspree.io and sign up with your email (hello@thrustcinema.com)
+         2. Create a New Form, name it "Thrust Cinema Contact"
+         3. Copy the form endpoint URL (looks like: https://formspree.io/f/xrgjabcd)
+         4. Replace "YOUR_FORMSPREE_ID" below with just the ID portion (xrgjabcd)
+         5. Save, push to GitHub, Vercel auto-redeploys
+         Submissions will arrive at the email you signed up with. -->
+    <form class="contact-form reveal"
+          id="contactForm"
+          action="https://formspree.io/f/YOUR_FORMSPREE_ID"
+          method="POST"
+          onsubmit="handleContactSubmit(event)">
       <h4>Send a message</h4>
 
       <div class="form-field">
@@ -96,8 +113,11 @@
         <textarea id="message" name="message" rows="5" required></textarea>
       </div>
 
+      <!-- Anti-spam honeypot field - bots fill it, humans don't see it -->
+      <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off" />
+
       <button type="submit" class="form-submit">Send Message →</button>
-      <div class="form-status" id="formStatus">Currently routes via mailto. Connect Formspree or Resend for direct delivery.</div>
+      <div class="form-status" id="formStatus">Messages go straight to hello@thrustcinema.com</div>
     </form>
   </div>
 </section>
@@ -143,7 +163,7 @@
       <ul>
         <li><a href="https://www.instagram.com/thrustcinema/" target="_blank" rel="noopener">Instagram</a></li>
         <li><a href="https://www.youtube.com/@thrustcinema" target="_blank" rel="noopener">YouTube</a></li>
-        <li><a href="#">TikTok</a></li>
+        <li><a href="https://www.tiktok.com/@thrustcinema" target="_blank" rel="noopener">TikTok</a></li>
       </ul>
     </div>
     <div class="footer-col">

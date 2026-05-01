@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Contact — Thrust Cinema</title>
+<meta name="description" content="Get in touch with Thrust Cinema. Collaborations, commissions, press." />
+<link rel="icon" type="image/png" href="favicon.png" />
+<link rel="apple-touch-icon" href="favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;900&family=Archivo+Narrow:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="index.html" class="nav-logo"><img src="logo.svg" alt="Thrust Cinema" /></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="index.html#films">Films</a>
+    <a href="about.html">About</a>
+    <a href="contact.html" class="active">Contact</a>
+  </div>
+</nav>
+
+<!-- HERO (compact) -->
+<section class="hero compact">
+  <div class="hero-bg"></div>
+  <canvas id="canvas-contact" class="webgl-canvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-eyebrow"><span></span>GET IN TOUCH<span></span></div>
+    <h1>
+      <div class="line"><span>Let's</span></div>
+      <div class="line"><span>make</span></div>
+      <div class="line"><span>something.</span></div>
+    </h1>
+    <p class="hero-sub">Collaborations, commissions, press inquiries, or just want to talk about beautiful machines? We read everything.</p>
+  </div>
+</section>
+
+<!-- CONTACT GRID -->
+<section>
+  <div class="contact-grid">
+    <div class="contact-info reveal">
+      <div class="section-num">01 / Channels</div>
+      <h3 style="margin-top: 16px;">Find us <em>everywhere.</em></h3>
+      <p>Use the form for project inquiries. For everything else, the channels below get to us faster.</p>
+
+      <div class="contact-channels">
+        <a href="mailto:hello@thrustcinema.com" class="contact-channel">
+          <span class="contact-channel-label">Email</span>
+          <span class="contact-channel-value">hello@thrustcinema.com</span>
+          <span class="contact-arrow">→</span>
+        </a>
+        <a href="https://www.instagram.com/thrustcinema/" target="_blank" rel="noopener" class="contact-channel">
+          <span class="contact-channel-label">Instagram</span>
+          <span class="contact-channel-value">@thrustcinema</span>
+          <span class="contact-arrow">↗</span>
+        </a>
+        <a href="https://www.youtube.com/@thrustcinema" target="_blank" rel="noopener" class="contact-channel">
+          <span class="contact-channel-label">YouTube</span>
+          <span class="contact-channel-value">@thrustcinema</span>
+          <span class="contact-arrow">↗</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- FORM -->
+    <form class="contact-form reveal" id="contactForm" onsubmit="handleContactSubmit(event)">
+      <h4>Send a message</h4>
+
+      <div class="form-field">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" required />
+      </div>
+
+      <div class="form-field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required />
+      </div>
+
+      <div class="form-field">
+        <label for="subject">What's this about?</label>
+        <select id="subject" name="subject">
+          <option value="Collaboration">Collaboration</option>
+          <option value="Commission">Commission / Brand film</option>
+          <option value="Press">Press inquiry</option>
+          <option value="General">General question</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="message">Message</label>
+        <textarea id="message" name="message" rows="5" required></textarea>
+      </div>
+
+      <button type="submit" class="form-submit">Send Message →</button>
+      <div class="form-status" id="formStatus">Currently routes via mailto. Connect Formspree or Resend for direct delivery.</div>
+    </form>
+  </div>
+</section>
+
+<!-- FAQ-style row -->
+<section class="manifesto">
+  <div class="section-header reveal" style="margin-bottom: 60px;">
+    <div>
+      <div class="section-num">02 / Common questions</div>
+      <h2 class="section-title">Quick <em>answers.</em></h2>
+    </div>
+    <p class="section-desc">A few things people usually ask before reaching out. If yours isn't here, the form's right above.</p>
+  </div>
+
+  <div class="subjects" style="max-width: 1400px; margin: 0 auto;">
+    <div class="subject reveal">
+      <div class="subject-num">Q</div>
+      <div class="subject-title" style="font-size: 24px; margin-top: 16px;">Do you take commissions?</div>
+      <p class="subject-desc">Yes. We create bespoke cinematic films for brands, manufacturers, and private collectors. Reach out via the form for rates and availability.</p>
+    </div>
+    <div class="subject reveal">
+      <div class="subject-num">Q</div>
+      <div class="subject-title" style="font-size: 24px; margin-top: 16px;">How long until you reply?</div>
+      <p class="subject-desc">Usually within 48 hours. For press deadlines, mention it in the subject line and we'll prioritize.</p>
+    </div>
+    <div class="subject reveal">
+      <div class="subject-num">Q</div>
+      <div class="subject-title" style="font-size: 24px; margin-top: 16px;">Can I license your films?</div>
+      <p class="subject-desc">Selected films are available for licensing. Tell us the use case (campaign, exhibit, broadcast) and we'll send terms.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="footer-brand-mark"><img src="logo.svg" alt="Thrust Cinema" /></div>
+      <p>AI-crafted cinematic films. Built by storytellers who believe machines deserve to be seen as they truly are.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Watch</h4>
+      <ul>
+        <li><a href="https://www.instagram.com/thrustcinema/" target="_blank" rel="noopener">Instagram</a></li>
+        <li><a href="https://www.youtube.com/@thrustcinema" target="_blank" rel="noopener">YouTube</a></li>
+        <li><a href="#">TikTok</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Site</h4>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="index.html#films">Films</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="mailto:hello@thrustcinema.com">hello@thrustcinema.com</a></li>
+        <li><a href="contact.html">Press</a></li>
+        <li><a href="contact.html">Collaborations</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2026 Thrust Cinema. All rights reserved.</div>
+    <div>thrustcinema.com</div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

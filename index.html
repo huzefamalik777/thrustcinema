@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Thrust Cinema — Motion in its purest form</title>
+<meta name="description" content="AI-crafted cinematic vehicle films. Cars. Bikes. Aircraft." />
+<link rel="icon" type="image/png" href="favicon.png" />
+<link rel="apple-touch-icon" href="favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;900&family=Archivo+Narrow:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="index.html" class="nav-logo"><img src="logo.svg" alt="Thrust Cinema" /></a>
+  <div class="nav-links">
+    <a href="index.html" class="active">Home</a>
+    <a href="index.html#films">Films</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <canvas id="canvas-home" class="webgl-canvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-eyebrow"><span></span>EST. 2026<span></span></div>
+    <h1>
+      <div class="line"><span>Motion</span></div>
+      <div class="line"><span>in its</span></div>
+      <div class="line"><span>purest form.</span></div>
+    </h1>
+    <p class="hero-sub">AI-crafted cinematic films of the world's most exhilarating machines. Cars. Bikes. Aircraft. Rendered frame by frame.</p>
+    <div class="hero-cta">
+      <a href="#films" class="btn btn-primary">Watch Films <span class="arrow">→</span></a>
+      <a href="https://www.instagram.com/thrustcinema/" target="_blank" rel="noopener" class="btn btn-ghost">Instagram <span class="arrow">↗</span></a>
+    </div>
+  </div>
+  <div class="scroll-indicator">Scroll</div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee">
+  <div class="marquee-track">
+    <span class="marquee-item">High Octane</span>
+    <span class="marquee-item">AI Crafted</span>
+    <span class="marquee-item">Cinematic Grade</span>
+    <span class="marquee-item">Cars · Bikes · Aircraft</span>
+    <span class="marquee-item">Thrust Cinema</span>
+    <span class="marquee-item">High Octane</span>
+    <span class="marquee-item">AI Crafted</span>
+    <span class="marquee-item">Cinematic Grade</span>
+    <span class="marquee-item">Cars · Bikes · Aircraft</span>
+    <span class="marquee-item">Thrust Cinema</span>
+  </div>
+</div>
+
+<!-- FILMS / YOUTUBE -->
+<section id="films">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-num">01 / Films</div>
+      <h2 class="section-title">Latest <em>Reels</em></h2>
+    </div>
+    <p class="section-desc">Auto-pulled from our YouTube channel. Every new film and short you upload appears here automatically — no manual updates needed.</p>
+  </div>
+
+  <!-- This grid auto-populates from YouTube via script.js -->
+  <div class="films" id="films-grid">
+    <!-- Fallback placeholders shown while loading or if feed fails -->
+    <div class="film reveal">
+      <div class="film-thumb"><div class="film-placeholder">01</div></div>
+      <div class="film-play"></div>
+      <div class="film-overlay">
+        <div class="film-meta">
+          <div class="film-tag">Coming Soon · Automotive</div>
+          <div class="film-title">First Light</div>
+        </div>
+      </div>
+    </div>
+    <div class="film reveal">
+      <div class="film-thumb"><div class="film-placeholder">02</div></div>
+      <div class="film-play"></div>
+      <div class="film-overlay">
+        <div class="film-meta">
+          <div class="film-tag">Coming Soon · Aviation</div>
+          <div class="film-title">Above</div>
+        </div>
+      </div>
+    </div>
+    <div class="film reveal">
+      <div class="film-thumb"><div class="film-placeholder">03</div></div>
+      <div class="film-play"></div>
+      <div class="film-overlay">
+        <div class="film-meta">
+          <div class="film-tag">Coming Soon · Motorcycle</div>
+          <div class="film-title">Twin Pulse</div>
+        </div>
+      </div>
+    </div>
+    <div class="film reveal">
+      <div class="film-thumb"><div class="film-placeholder">04</div></div>
+      <div class="film-play"></div>
+      <div class="film-overlay">
+        <div class="film-meta">
+          <div class="film-tag">Coming Soon · Automotive</div>
+          <div class="film-title">Night Tracks</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="films-loading" id="films-loading">Loading latest from YouTube</div>
+
+  <!-- Shorts section - hidden by default, shown if shorts found -->
+  <div class="shorts-section" id="shorts-section" style="display: none;">
+    <div class="shorts-header">
+      <h3>Quick <em>Cuts.</em></h3>
+      <a href="https://www.youtube.com/@thrustcinema/shorts" target="_blank" rel="noopener" class="btn btn-ghost">All Shorts <span class="arrow">↗</span></a>
+    </div>
+    <div class="shorts-grid" id="shorts-grid"></div>
+  </div>
+
+  <!-- YouTube channel CTA -->
+  <div class="yt-banner reveal">
+    <div class="yt-banner-text">
+      <h3>Subscribe on YouTube</h3>
+      <p>Get every new film the moment it drops. Channel: @thrustcinema</p>
+    </div>
+    <a href="https://www.youtube.com/@thrustcinema?sub_confirmation=1" target="_blank" rel="noopener" class="btn btn-primary">
+      Visit Channel <span class="arrow">↗</span>
+    </a>
+  </div>
+</section>
+
+<!-- MANIFESTO -->
+<section class="manifesto">
+  <div class="manifesto-content reveal">
+    <p class="manifesto-quote">
+      We don't capture machines. <br />
+      We <em>imagine</em> them into <em>motion</em>.
+    </p>
+    <div class="manifesto-attr">— The Thrust Cinema Manifesto</div>
+  </div>
+</section>
+
+<!-- SUBJECTS -->
+<section>
+  <div class="section-header reveal">
+    <div>
+      <div class="section-num">02 / Subjects</div>
+      <h2 class="section-title">Three <em>Disciplines</em></h2>
+    </div>
+    <p class="section-desc">Every machine has a soul. We render the ones whose pulse can be measured in horsepower, RPM, and altitude.</p>
+  </div>
+  <div class="subjects">
+    <div class="subject reveal">
+      <div class="subject-num">01</div>
+      <div class="subject-icon">
+        <svg viewBox="0 0 64 64"><path d="M8 36 L14 22 L50 22 L56 36 L56 46 L48 46 L48 42 L16 42 L16 46 L8 46 Z"/><circle cx="20" cy="46" r="5"/><circle cx="44" cy="46" r="5"/><line x1="20" y1="22" x2="16" y2="14"/><line x1="44" y1="22" x2="48" y2="14"/></svg>
+      </div>
+      <div class="subject-title">Cars</div>
+      <p class="subject-desc">From hand-built supercars to forgotten classics. Every body line tells a story.</p>
+    </div>
+    <div class="subject reveal">
+      <div class="subject-num">02</div>
+      <div class="subject-icon">
+        <svg viewBox="0 0 64 64"><circle cx="14" cy="44" r="10"/><circle cx="50" cy="44" r="10"/><path d="M14 44 L26 28 L40 28 L46 22 L52 22"/><path d="M26 28 L34 18 L42 18"/><line x1="50" y1="44" x2="42" y2="18"/></svg>
+      </div>
+      <div class="subject-title">Bikes</div>
+      <p class="subject-desc">Two wheels. Pure mechanics. The most honest form of speed there is.</p>
+    </div>
+    <div class="subject reveal">
+      <div class="subject-num">03</div>
+      <div class="subject-icon">
+        <svg viewBox="0 0 64 64"><path d="M32 8 L34 30 L58 38 L58 44 L34 40 L32 52 L40 56 L40 58 L24 58 L24 56 L32 52 L30 40 L6 44 L6 38 L30 30 Z"/></svg>
+      </div>
+      <div class="subject-title">Aircraft</div>
+      <p class="subject-desc">Vintage warbirds to cutting-edge jets. Where engineering meets the sky.</p>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section>
+  <div class="newsletter-inner">
+    <div class="reveal">
+      <div class="section-num">03 / The List</div>
+      <h2 class="newsletter-title">Get our films <em>first.</em></h2>
+    </div>
+    <div class="newsletter-form reveal">
+      <p>Drops, behind-the-scenes, and merch — straight to your inbox before they hit the feed. No spam.</p>
+      <div class="input-row">
+        <input type="email" placeholder="your@email.com" id="emailInput" />
+        <button onclick="handleSubscribe()">Subscribe →</button>
+      </div>
+      <div class="form-note" id="formNote">Connect this form to ConvertKit, Beehiiv, or Mailchimp.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="footer-brand-mark"><img src="logo.svg" alt="Thrust Cinema" /></div>
+      <p>AI-crafted cinematic films. Built by storytellers who believe machines deserve to be seen as they truly are.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Watch</h4>
+      <ul>
+        <li><a href="https://www.instagram.com/thrustcinema/" target="_blank" rel="noopener">Instagram</a></li>
+        <li><a href="https://www.youtube.com/@thrustcinema" target="_blank" rel="noopener">YouTube</a></li>
+        <li><a href="#">TikTok</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Site</h4>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="index.html#films">Films</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="mailto:hello@thrustcinema.com">hello@thrustcinema.com</a></li>
+        <li><a href="contact.html">Press</a></li>
+        <li><a href="contact.html">Collaborations</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2026 Thrust Cinema. All rights reserved.</div>
+    <div>thrustcinema.com</div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -35,11 +35,14 @@ function handleSubscribe() {
   document.getElementById('emailInput').value = '';
 }
 
-// Contact form handler
-function handleContactSubmit(e) {
+// Contact form handler — submits to Formspree
+async function handleContactSubmit(e) {
   e.preventDefault();
-  const status = document.getElementById('formStatus');
   const form = document.getElementById('contactForm');
+  const status = document.getElementById('formStatus');
+  const submitBtn = form.querySelector('button[type="submit"]');
+
+  // Basic validation
   const data = new FormData(form);
   const name = data.get('name');
   const email = data.get('email');
@@ -56,13 +59,43 @@ function handleContactSubmit(e) {
     return;
   }
 
-  // Mailto fallback - replace this with Formspree/Resend/Netlify Forms when ready
-  const subject = encodeURIComponent(`[${data.get('subject') || 'General'}] Inquiry from ${name}`);
-  const body = encodeURIComponent(`From: ${name} <${email}>\n\n${message}`);
-  window.location.href = `mailto:hello@thrustcinema.com?subject=${subject}&body=${body}`;
+  // Check that Formspree is configured
+  if (form.action.includes('YOUR_FORMSPREE_ID')) {
+    status.textContent = 'Form not yet configured. See contact.html instructions.';
+    status.style.color = 'var(--accent)';
+    return;
+  }
 
-  status.textContent = 'Opening your email client...';
-  status.style.color = 'var(--fg-dim)';
+  // Submit
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Sending...';
+  status.textContent = '';
+
+  try {
+    const response = await fetch(form.action, {
+      method: 'POST',
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    });
+
+    if (response.ok) {
+      status.textContent = 'Thanks. We\'ll get back to you within 48 hours.';
+      status.style.color = 'var(--fg-dim)';
+      form.reset();
+      submitBtn.textContent = 'Sent ✓';
+      setTimeout(() => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send Message →';
+      }, 3000);
+    } else {
+      throw new Error('Form submission failed');
+    }
+  } catch (err) {
+    status.textContent = 'Could not send right now. Email hello@thrustcinema.com directly.';
+    status.style.color = 'var(--accent)';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Send Message →';
+  }
 }
 
 // ============================================================

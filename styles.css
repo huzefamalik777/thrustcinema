@@ -660,8 +660,23 @@ section { padding: 140px 40px; position: relative; }
 .subject-icon {
   margin: 24px 0 32px;
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  height: 72px;
+  display: flex;
+  align-items: center;
 }
 .subject-icon svg { width: 64px; height: 64px; stroke: var(--fg); fill: none; stroke-width: 1.5; }
+.subject-icon img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  /* SVG icons are dark by default; invert + brightness flips them to pure white */
+  filter: brightness(0) invert(1);
+  transition: filter 0.4s ease;
+}
+/* On hover, paint them red (the accent color) using a CSS filter chain */
+.subject:hover .subject-icon img {
+  filter: brightness(0) saturate(100%) invert(38%) sepia(96%) saturate(7474%) hue-rotate(345deg) brightness(102%) contrast(108%);
+}
 .subject-title {
   font-family: var(--display);
   font-size: 42px;

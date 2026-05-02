@@ -1,111 +1,140 @@
-// ============================================================
-// Vercel Serverless Function: /api/youtube
-// ============================================================
-// Fetches the latest videos from a YouTube channel's public RSS
-// feed and returns them as clean JSON.
+// api/youtube.js
+// Fetches recent videos from the Thrust Cinema YouTube channel using the
+// official YouTube Data API v3. Returns Shorts + regular videos with
+// thumbnails, view counts, and durations.
 //
-// HARDENED VERSION:
-// - Tries multiple endpoint formats (channel RSS + uploads playlist RSS)
-// - Realistic browser headers to avoid YouTube bot blocking
-// - Retries on transient 4xx errors with backoff
-// - Caches successful responses for 10 mins; caches errors for 30s only
-//   (so a transient YouTube blip doesn't lock us out for an hour)
-//
-// To use a different channel, edit CHANNEL_ID below.
-// ============================================================
+// Required env var: YOUTUBE_API_KEY (set in Vercel dashboard)
 
-const CHANNEL_ID = 'UCGG_r-KeU3UH_XeJ1EcwUsw'; // @thrustcinema
+const CHANNEL_ID = 'UCGG_r-KeU3UH_XeJ1EcwUsw'; // Thrust Cinema
+const MAX_RESULTS = 12; // how many recent videos to fetch
 
-// YouTube has two equivalent RSS endpoints. We try the channel one first,
-// then fall back to the uploads playlist (which is just channel ID with UC -> UU).
-const PLAYLIST_ID = 'UU' + CHANNEL_ID.slice(2);
+// Simple in-memory cache (per Vercel function instance)
+let cache = { data: null, timestamp: 0, error: null, errorTimestamp: 0 };
+const SUCCESS_TTL = 10 * 60 * 1000;  // 10 minutes
+const ERROR_TTL = 30 * 1000;         // 30 seconds — fail fast, recover fast
 
-const RSS_URLS = [
-  `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`,
-  `https://www.youtube.com/feeds/videos.xml?playlist_id=${PLAYLIST_ID}`,
-];
+// Convert ISO 8601 duration (PT1M30S) to seconds, then format as M:SS
+function formatDuration(iso) {
+  if (!iso) return '';
+  const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if (!match) return '';
+  const hours = parseInt(match[1] || 0, 10);
+  const minutes = parseInt(match[2] || 0, 10);
+  const seconds = parseInt(match[3] || 0, 10);
+  const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+  if (hours > 0) {
+    return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  }
+  return `${minutes}:${String(seconds).padStart(2, '0')}`;
+}
 
-// Realistic browser-like headers to reduce YouTube bot rejection.
-const FETCH_HEADERS = {
-  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-  'Accept': 'application/atom+xml,application/xml,text/xml,*/*;q=0.8',
-  'Accept-Language': 'en-US,en;q=0.9',
-  'Accept-Encoding': 'gzip, deflate, br',
-  'Cache-Control': 'no-cache',
-};
+// Pick the best available thumbnail (maxres if available, else high)
+function pickThumbnail(thumbnails) {
+  if (!thumbnails) return '';
+  return (
+    thumbnails.maxres?.url ||
+    thumbnails.standard?.url ||
+    thumbnails.high?.url ||
+    thumbnails.medium?.url ||
+    thumbnails.default?.url ||
+    ''
+  );
+}
+
+async function fetchYouTubeVideos(apiKey) {
+  // Step 1: Get recent video IDs from the search endpoint (newest first)
+  const searchUrl = new URL('https://www.googleapis.com/youtube/v3/search');
+  searchUrl.searchParams.set('key', apiKey);
+  searchUrl.searchParams.set('channelId', CHANNEL_ID);
+  searchUrl.searchParams.set('part', 'snippet');
+  searchUrl.searchParams.set('order', 'date');
+  searchUrl.searchParams.set('type', 'video');
+  searchUrl.searchParams.set('maxResults', String(MAX_RESULTS));
+
+  const searchRes = await fetch(searchUrl.toString());
+  if (!searchRes.ok) {
+    const text = await searchRes.text();
+    throw new Error(`Search API ${searchRes.status}: ${text.slice(0, 200)}`);
+  }
+  const searchData = await searchRes.json();
+  const videoIds = (searchData.items || [])
+    .map(item => item.id?.videoId)
+    .filter(Boolean);
+
+  if (videoIds.length === 0) {
+    return [];
+  }
+
+  // Step 2: Get full details (duration, view count, better thumbnails) for those IDs
+  const videosUrl = new URL('https://www.googleapis.com/youtube/v3/videos');
+  videosUrl.searchParams.set('key', apiKey);
+  videosUrl.searchParams.set('part', 'snippet,contentDetails,statistics');
+  videosUrl.searchParams.set('id', videoIds.join(','));
+
+  const videosRes = await fetch(videosUrl.toString());
+  if (!videosRes.ok) {
+    const text = await videosRes.text();
+    throw new Error(`Videos API ${videosRes.status}: ${text.slice(0, 200)}`);
+  }
+  const videosData = await videosRes.json();
+
+  return (videosData.items || []).map(v => {
+    const durationSec = (() => {
+      const m = v.contentDetails?.duration?.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+      if (!m) return 0;
+      return (parseInt(m[1] || 0, 10) * 3600) +
+             (parseInt(m[2] || 0, 10) * 60) +
+             (parseInt(m[3] || 0, 10));
+    })();
+
+    return {
+      id: v.id,
+      title: v.snippet?.title || '',
+      description: v.snippet?.description || '',
+      published: v.snippet?.publishedAt || '',
+      thumbnail: pickThumbnail(v.snippet?.thumbnails),
+      duration: formatDuration(v.contentDetails?.duration),
+      durationSeconds: durationSec,
+      isShort: durationSec > 0 && durationSec <= 60,
+      viewCount: parseInt(v.statistics?.viewCount || 0, 10),
+      likeCount: parseInt(v.statistics?.likeCount || 0, 10),
+      link: `https://www.youtube.com/watch?v=${v.id}`,
+      shortLink: `https://www.youtube.com/shorts/${v.id}`,
+    };
+  });
+}
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Content-Type', 'application/json');
-
-  let lastError = null;
-
-  // Try each endpoint, with up to 2 attempts each (4 total tries max)
-  for (const url of RSS_URLS) {
-    for (let attempt = 0; attempt < 2; attempt++) {
-      try {
-        const response = await fetch(url, { headers: FETCH_HEADERS });
-
-        if (response.ok) {
-          const xml = await response.text();
-          const items = parseYouTubeRSS(xml);
-
-          if (items.length > 0) {
-            // Success - cache for 10 minutes at the edge
-            res.setHeader('Cache-Control', 's-maxage=600, stale-while-revalidate=1800');
-            return res.status(200).json({ items, count: items.length });
-          }
-          // Empty feed - might mean no videos yet. Cache shorter.
-          res.setHeader('Cache-Control', 's-maxage=120, stale-while-revalidate=600');
-          return res.status(200).json({ items: [], count: 0 });
-        }
-
-        lastError = `${url} responded ${response.status}`;
-        // Brief backoff before retry
-        if (attempt === 0) await sleep(500);
-      } catch (err) {
-        lastError = `${url} threw: ${err.message}`;
-        if (attempt === 0) await sleep(500);
-      }
-    }
+  const apiKey = process.env.YOUTUBE_API_KEY;
+  if (!apiKey) {
+    return res.status(500).json({
+      error: 'YOUTUBE_API_KEY environment variable not set in Vercel',
+      items: [],
+    });
   }
 
-  // All attempts failed. Cache the error response for only 30 seconds
-  // so a transient YouTube blip doesn't lock the site out for 10 minutes.
-  res.setHeader('Cache-Control', 's-maxage=30');
-  res.status(200).json({ error: lastError || 'unknown', items: [] });
-}
+  const now = Date.now();
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function parseYouTubeRSS(xml) {
-  const items = [];
-  const entryRegex = /<entry>([\s\S]*?)<\/entry>/g;
-  let match;
-  while ((match = entryRegex.exec(xml)) !== null) {
-    const entry = match[1];
-    const id = pick(entry, /<yt:videoId>([^<]+)<\/yt:videoId>/);
-    const title = pick(entry, /<title>([^<]+)<\/title>/);
-    const published = pick(entry, /<published>([^<]+)<\/published>/);
-    const description = pick(entry, /<media:description>([\s\S]*?)<\/media:description>/);
-    const link = `https://www.youtube.com/watch?v=${id}`;
-    if (id) items.push({ id, title, published, description, link });
+  // Serve cached success if fresh
+  if (cache.data && (now - cache.timestamp) < SUCCESS_TTL) {
+    res.setHeader('Cache-Control', 's-maxage=600, stale-while-revalidate=1200');
+    return res.status(200).json({ items: cache.data, cached: true, count: cache.data.length });
   }
-  return items;
-}
 
-function pick(text, regex) {
-  const m = text.match(regex);
-  return m ? decodeXml(m[1].trim()) : '';
-}
+  // Serve cached error if fresh (avoids hammering API on repeated failures)
+  if (cache.error && (now - cache.errorTimestamp) < ERROR_TTL) {
+    return res.status(200).json({ error: cache.error, items: [], cached: true });
+  }
 
-function decodeXml(s) {
-  return s
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'");
+  try {
+    const items = await fetchYouTubeVideos(apiKey);
+    cache = { data: items, timestamp: now, error: null, errorTimestamp: 0 };
+    res.setHeader('Cache-Control', 's-maxage=600, stale-while-revalidate=1200');
+    return res.status(200).json({ items, count: items.length });
+  } catch (err) {
+    const errMsg = err.message || String(err);
+    cache.error = errMsg;
+    cache.errorTimestamp = now;
+    return res.status(200).json({ error: errMsg, items: [] });
+  }
 }
